@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>رفيقي في العلم</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f8ff;
+      direction: rtl;
+      text-align: center;
+    }
+    header {
+      background-color: #ffffff;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #ccc;
+    }
+    header h1 {
+      color: #ff7f00;
+      font-size: 28px;
+      margin: 0 auto;
+    }
+    header img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
+    .icon-smile {
+      font-size: 28px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      padding: 30px;
+    }
+    .tile {
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      font-size: 20px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .tile:hover {
+      transform: scale(1.05);
+    }
+    .blue    { background-color: #b3e5fc; }
+    .orange  { background-color: #ffd180; }
+    .green   { background-color: #c8e6c9; }
+    .purple  { background-color: #e1bee7; }
+    .yellow  { background-color: #fff9c4; }
+    .red     { background-color: #ffcdd2; }
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <img src="images/user.png" alt="صورة المستخدم">
+  <h1> رفيقي في العلم </h1>
+  <div class="icon-smile">😊</div>
+</header>
+
+<div class="grid">
+  <a href="activity.html"><div class="tile orange">📖 تعلم شامل</div></a>
+  <div class="tile yellow">😊 السمات والشعور</div>
+  <div class="tile green">🔄 أكتب تجاربي</div>
+  <div class="tile purple">🧰 صندوق أدوات</div>
+  <div class="tile blue">🕒 روتيني</div>
+  <div class="tile red">🌟 نجمتي</div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <title>تعلم الكلمات - نشاط متسلسل</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      direction: rtl;
+      background-color: #d9f0ff; /* أزرق فاتح */
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      color: #ff7f00; /* برتقالي */
+      font-weight: bold;
+      font-size: 2.5em;
+      margin-bottom: 30px;
+    }
+    /* تعديل التنسيق ليجعل الصور في وسط الشاشة */
+    .images {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center; /* مركز الصور أفقياً */
+      align-items: center;     /* مركز الصور عمودياً */
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .images img {
+      width: 150px;
+      margin: 10px;
+      cursor: pointer;
+      border: 4px solid transparent;
+      border-radius: 15px;
+      transition: border-color 0.3s ease;
+    }
+    .images img.correct {
+      border-color: #ffeb3b; /* أصفر */
+      box-shadow: 0 0 10px #ffeb3b;
+    }
+    .images img.wrong {
+      border-color: #f44336; /* أحمر */
+      box-shadow: 0 0 10px #f44336;
+    }
+    .feedback {
+      font-size: 26px;
+      margin-top: 20px;
+      font-weight: bold;
+      min-height: 40px;
+      color: white;
+      padding: 10px 0;
+    }
+    .feedback.success {
+      background-color: #ffeb3b; /* أصفر */
+      color: #000;
+      border-radius: 10px;
+      width: 200px;
+      margin: 20px auto 0;
+    }
+    .feedback.error {
+      background-color: #f44336; /* أحمر */
+      color: white;
+      border-radius: 10px;
+      width: 200px;
+      margin: 20px auto 0;
+    }
+    .letters {
+      margin-top: 30px;
+    }
+    .letter {
+      font-size: 36px;
+      padding: 15px 25px;
+      margin: 5px;
+      background-color: #4caf50; /* أخضر فاتح */
+      color: white;
+      border-radius: 15px;
+      display: inline-block;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.3s ease;
+    }
+    .letter.correct {
+      background-color: #ffeb3b; /* أصفر */
+      color: #000;
+      cursor: default;
+    }
+    .letter.wrong {
+      background-color: #f44336; /* أحمر */
+      color: white;
+    }
+    #typedWord {
+      font-size: 36px;
+      margin-top: 25px;
+      font-weight: bold;
+      min-height: 50px;
+      color: #333;
+    }
+    #success {
+      display: none;
+      margin-top: 30px;
+      font-size: 32px;
+      font-weight: bold;
+      color: #ffeb3b; /* أصفر */
+      text-shadow: 1px 1px 5px #000;
+    }
+
+    /* تنسيق متجاوب للهواتف */
+    @media (max-width: 600px) {
+      .images img {
+        width: 100px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+      .letter {
+        font-size: 28px;
+        padding: 10px 18px;
+      }
+      #typedWord {
+        font-size: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1 id="questionTitle">أين التفاحة؟</h1>
+
+  <!-- أصوات -->
+  <audio id="questionAudio" src="audio/where_is_apple.wav"></audio>
+  <audio id="goodAudio" src="audio/good_job.wav"></audio>
+  <audio id="tryAudio" src="audio/try_again.wav"></audio>
+  <audio id="clapAudio" src="audio/clap.wav"></audio>
+
+  <div class="images" id="imagesContainer"></div>
+
+  <div class="feedback" id="feedback"></div>
+
+  <div class="letters" id="lettersContainer"></div>
+
+  <div id="typedWord"></div>
+  <div id="success">رائع! 🌟</div>
+
+  <script>
+    const activities = [
+      {
+        word: "تفاحة",
+        question: "أين التفاحة؟",
+        audio: "audio/where_is_apple.wav",
+        options: [
+          {src: "images/banana.jpg", alt: "موزة", correct: false},
+          {src: "images/apple.jpg", alt: "تفاحة", correct: true},
+          {src: "images/ball.jpg", alt: "كرة", correct: false}
+        ],
+        letters: ['ت', 'ف', 'ا', 'ح', 'ة']
+      },
+      {
+        word: "كرة",
+        question: "أين الكرة؟",
+        audio: "audio/where_is_ball.wav",
+        options: [
+          {src: "images/apple.jpg", alt: "تفاحة", correct: false},
+          {src: "images/ball.jpg", alt: "كرة", correct: true},
+          {src: "images/banana.jpg", alt: "موزة", correct: false}
+        ],
+        letters: ['ك', 'ر', 'ة']
+      },
+      {
+        word: "موزة",
+        question: "أين الموزة؟",
+        audio: "audio/where_is_banana.wav",
+        options: [
+          {src: "images/ball.jpg", alt: "كرة", correct: false},
+          {src: "images/banana.jpg", alt: "موزة", correct: true},
+          {src: "images/apple.jpg", alt: "تفاحة", correct: false}
+        ],
+        letters: ['م', 'و', 'ز', 'ة']
+      }
+    ];
+
+    let currentActivityIndex = 0;
+    let currentLetterIndex = 0;
+
+    const questionTitle = document.getElementById("questionTitle");
+    const questionAudio = document.getElementById("questionAudio");
+    const goodAudio = document.getElementById("goodAudio");
+    const tryAudio = document.getElementById("tryAudio");
+    const clapAudio = document.getElementById("clapAudio");
+
+    const imagesContainer = document.getElementById("imagesContainer");
+    const feedback = document.getElementById("feedback");
+    const lettersContainer = document.getElementById("lettersContainer");
+    const typedWord = document.getElementById("typedWord");
+    const success = document.getElementById("success");
+
+    function loadActivity() {
+      success.style.display = "none";
+      feedback.innerText = "";
+      feedback.className = "feedback";
+      typedWord.innerText = "";
+      lettersContainer.innerHTML = "";
+      imagesContainer.innerHTML = "";
+
+      const activity = activities[currentActivityIndex];
+      currentLetterIndex = 0;
+
+      // تحديث السؤال والعنوان والصوت
+      questionTitle.innerText = activity.question;
+      questionAudio.src = activity.audio;
+      questionAudio.play();
+
+      // عرض الصور
+      activity.options.forEach(option => {
+        const img = document.createElement("img");
+        img.src = option.src;
+        img.alt = option.alt;
+        img.style.borderColor = "transparent";
+        img.className = "";
+        img.onclick = () => checkAnswer(img, option.correct);
+        imagesContainer.appendChild(img);
+      });
+
+      // إخفاء الحروف حتى النجاح
+      lettersContainer.style.display = "none";
+    }
+
+    function checkAnswer(img, isCorrect) {
+      if (isCorrect) {
+        img.classList.add("correct");
+        feedback.className = "feedback success";
+        feedback.innerText = "أحسنت!";
+        goodAudio.play();
+        setTimeout(() => {
+          imagesContainer.style.display = "none";
+          feedback.innerText = "رتب حروف كلمة " + activities[currentActivityIndex].word;
+          lettersContainer.style.display = "block";
+
+          // عرض الحروف مبعثرة
+          renderLetters();
+        }, 2000);
+      } else {
+        img.classList.add("wrong");
+        feedback.className = "feedback error";
+        feedback.innerText = "جرب مرة أخرى";
+        tryAudio.play();
+        setTimeout(() => {
+          img.classList.remove("wrong");
+          feedback.innerText = "";
+          feedback.className = "feedback";
+        }, 1200);
+      }
+    }
+
+    function renderLetters() {
+      lettersContainer.innerHTML = "";
+      const letters = activities[currentActivityIndex].letters.slice();
+
+      // خلط الحروف
+      letters.sort(() => Math.random() - 0.5);
+
+      letters.forEach(letter => {
+        const div = document.createElement("div");
+        div.className = "letter";
+        div.innerText = letter;
+        div.onclick = () => pickLetter(div);
+        lettersContainer.appendChild(div);
+      });
+    }
+
+    function pickLetter(div) {
+      if (div.classList.contains("correct")) return;
+
+      const currentLetter = activities[currentActivityIndex].letters[currentLetterIndex];
+
+      if (div.innerText === currentLetter) {
+        typedWord.innerText += div.innerText;
+        div.classList.add("correct");
+        div.onclick = null;
+        currentLetterIndex++;
+        if (currentLetterIndex === activities[currentActivityIndex].letters.length) {
+          success.style.display = "block";
+          clapAudio.play();
+
+          setTimeout(() => {
+            currentActivityIndex++;
+            if (currentActivityIndex < activities.length) {
+              imagesContainer.style.display = "flex";
+              loadActivity();
+            } else {
+              questionTitle.innerText = "تهانينا! أكملت جميع الأنشطة.";
+              imagesContainer.style.display = "none";
+              lettersContainer.style.display = "none";
+              feedback.innerText = "";
+              typedWord.innerText = "";
+              success.innerText = "🎉👏👏👏🎉";
+              success.style.display = "block";
+            }
+          }, 3000);
+        }
+      } else {
+        div.classList.add("wrong");
+        tryAudio.play();
+        setTimeout(() => div.classList.remove("wrong"), 800);
+      }
+    }
+
+    window.onload = loadActivity;
+  </script>
+
+</body>
+</html>
